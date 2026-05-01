@@ -48,11 +48,11 @@ multi-agent systems, task scheduling, makespan minimization, competitive analysi
 \section{Introduction}
 %=====================================================================
 
-The orchestration of heterogeneous tasks across multi-agent systems (MAS) is a fundamental challenge in distributed computing, arising in domains from cloud computing \cite{pinedo2016} to warehouse robotics \cite{gerkey2004, parker1998} and market-based multi-robot coordination \cite{dias2006}. The core optimization problem is to assign $N$ tasks with varying processing requirements to $M$ agents with diverse computational capacities, minimizing the \emph{makespan} $C_{\max}$---the completion time of the last finishing agent. This problem has roots dating to McNaughton's foundational work on scheduling with deadlines \cite{mcnaughton1959} and has been extensively cataloged in scheduling textbooks \cite{brucker2007, pinedo2016}.
+The orchestration of heterogeneous tasks across multi-agent systems (MAS) is a fundamental challenge in distributed computing, arising in domains from cloud computing \cite{pinedo2016} to warehouse robotics \cite{gerkey2004} and autonomous multi-agent coordination \cite{dorri2018}. The core optimization problem is to assign $N$ tasks with varying processing requirements to $M$ agents with diverse computational capacities, minimizing the \emph{makespan} $C_{\max}$---the completion time of the last finishing agent.
 
-In scheduling theory, this problem is denoted $R||C_{\max}$ for unrelated machines, where each task-agent pair $(j, i)$ has an arbitrary processing time $p_{ij}$ \cite{lenstra1990}. Even the simpler identical-machine variant $P||C_{\max}$ is strongly NP-hard \cite{garey1979}, as established through connections to bin packing \cite{coffman1978}. This motivates decades of research into approximation algorithms \cite{williamson2011} and online heuristics \cite{borodin1998}.
+In scheduling theory, this problem is denoted $R||C_{\max}$ for unrelated machines, where each task-agent pair $(j, i)$ has an arbitrary processing time $p_{ij}$ \cite{lenstra1990}. Even the simpler identical-machine variant $P||C_{\max}$ is strongly NP-hard \cite{garey1979}, as established through connections to bin packing \cite{coffman1978}, motivating decades of research into approximation algorithms and online heuristics \cite{borodin1998}.
 
-Two paradigms dominate the literature. \emph{Offline algorithms}, exemplified by Graham's Longest Processing Time (LPT) rule \cite{graham1969}, assume complete task knowledge and achieve provable approximation ratios. \emph{Online algorithms}, such as List Scheduling \cite{graham1966}, handle tasks as they arrive but sacrifice optimality. Classical results show that no deterministic online algorithm for unrelated machines can achieve a competitive ratio better than $\Omega(\log n)$ \cite{aspnes1997, shmoys1995}.
+Two paradigms dominate the literature. \emph{Offline algorithms}, exemplified by Graham's Longest Processing Time (LPT) rule \cite{graham1969}, assume complete task knowledge and achieve provable approximation ratios. \emph{Online algorithms}, such as List Scheduling \cite{graham1966}, handle tasks as they arrive but sacrifice optimality. Classical results show that no deterministic online algorithm for unrelated machines can achieve a competitive ratio better than $\Omega(\log n)$ \cite{aspnes1997}.
 
 \textbf{Contribution.} We propose the \emph{Hybrid Adaptive Scheduler (HAS)}, which bridges the offline-online divide through a tunable batch parameter $\alpha$. Rather than committing fully to either paradigm, HAS collects a fraction $\alpha$ of arriving tasks into a buffer, applies LPT scheduling to the batch, then handles remaining tasks online. We provide:
 \begin{enumerate}
@@ -68,19 +68,15 @@ Two paradigms dominate the literature. \emph{Offline algorithms}, exemplified by
 
 \subsection{Offline Scheduling}
 
-Graham \cite{graham1966} introduced List Scheduling for identical parallel machines, proving a $(2 - 1/M)$ approximation ratio. His subsequent LPT analysis \cite{graham1969} improved this to $(4/3 - 1/3M)$. For unrelated machines, Lenstra, Shmoys, and Tardos \cite{lenstra1990} achieved a 2-approximation via LP rounding and proved a $3/2$ inapproximability lower bound. Hochbaum and Shmoys \cite{hochbaum1987} developed a PTAS for identical machines with fixed $M$, and Epstein and Sgall \cite{epstein2004} extended approximation schemes to uniformly related machines. More recently, Skutella and Verschae \cite{skutella2016} proposed improved approximations for unrelated parallel machines, while Svensson \cite{svensson2012} and Bansal and Srinivasan \cite{bansal2006} studied the related max-min (Santa Claus) variant, establishing deeper structural insights into machine scheduling.
+Graham \cite{graham1966} introduced List Scheduling for identical parallel machines, proving a $(2 - 1/M)$ approximation ratio. His subsequent LPT analysis \cite{graham1969} improved this to $(4/3 - 1/3M)$. For unrelated machines, Lenstra, Shmoys, and Tardos \cite{lenstra1990} achieved a 2-approximation via LP rounding and proved a $3/2$ inapproximability lower bound. Hochbaum and Shmoys \cite{hochbaum1987} developed a PTAS for identical machines with fixed $M$.
 
 \subsection{Online Scheduling and Competitive Analysis}
 
-The competitive analysis framework, formalized by Sleator and Tarjan \cite{sleator1985} and comprehensively surveyed by Borodin and El-Yaniv \cite{borodin1998}, measures online algorithm performance against an omniscient offline adversary. For identical machines, online List Scheduling is $(2-1/M)$-competitive \cite{graham1966}. Albers \cite{albers1999} improved the deterministic upper bound, while Bartal et al. \cite{bartal1995} and Karger et al. \cite{karger1996} developed new algorithmic paradigms for the ancient scheduling problem. Fleischer and Wahl \cite{fleischer2000} further tightened the deterministic bound to $1.9201$. Shmoys, Wein, and Williamson \cite{shmoys1995} studied online scheduling on parallel machines, and Sgall \cite{sgall1998} provided a comprehensive survey of the field. For unrelated machines, Aspnes et al. \cite{aspnes1997} proved an $\Omega(\log n)$ lower bound and provided a matching $O(\log n)$-competitive algorithm using exponential potential functions. Awerbuch et al. \cite{awerbuch1995} generalized online load balancing to the $L_p$ norm.
+The competitive analysis framework, formalized by Sleator and Tarjan \cite{sleator1985} and surveyed by Borodin and El-Yaniv \cite{borodin1998}, measures online algorithm performance against an omniscient offline adversary. For identical machines, online List Scheduling is $(2-1/M)$-competitive \cite{graham1966}. Albers \cite{albers1999} improved the deterministic upper bound, and Fleischer and Wahl \cite{fleischer2000} tightened the bound to $1.9201$. Shmoys, Wein, and Williamson \cite{shmoys1995} studied online scheduling on parallel machines, and Sgall \cite{sgall1998} provided a comprehensive survey. For unrelated machines, Aspnes et al. \cite{aspnes1997} proved an $\Omega(\log n)$ lower bound and provided a matching $O(\log n)$-competitive algorithm.
 
-\subsection{Multi-Agent Task Allocation}
+\subsection{Multi-Agent Task Allocation and Load Balancing}
 
-Gerkey and Matari\'{c} \cite{gerkey2004} formalized Multi-Robot Task Allocation (MRTA) taxonomy along three axes, later extended by Korsah et al. \cite{korsah2013}. Smith's Contract Net Protocol \cite{smith1980} provides a decentralized negotiation framework, while Parker's ALLIANCE architecture \cite{parker1998} introduced fault-tolerant multi-robot cooperation. Market-based coordination mechanisms have been extensively surveyed by Dias et al. \cite{dias2006}, and recent auction-based approaches by Otte et al. \cite{otte2020} address communication-limited environments. Modern MAS surveys \cite{dorri2018, wooldridge1995} highlight the integration of reinforcement learning for dynamic scheduling, though without formal competitive guarantees.
-
-\subsection{Load Balancing and Game-Theoretic Aspects}
-
-In decentralized settings, the ``Power of Two Choices'' paradigm \cite{azar1999, mitzenmacher2001} demonstrates that sampling just two agents and choosing the less loaded one reduces maximum load exponentially. V\"{o}cking \cite{vocking2003} showed that asymmetric tie-breaking further improves load balancing, and Berenbrink et al. \cite{berenbrink2006} extended these results to the heavily loaded case. When agents act selfishly, Koutsoupias and Papadimitriou \cite{koutsoupias1999} introduced the Price of Anarchy (PoA), and Roughgarden and Tardos \cite{roughgarden2002} established tight PoA bounds for selfish routing. Christodoulou and Koutsoupias \cite{christodoulou2005} analyzed the PoA for finite congestion games, while Immorlica et al. \cite{immorlica2009} designed coordination mechanisms to mitigate selfishness. Nisan and Ronen \cite{nisan2001} formalized algorithmic mechanism design for scheduling on unrelated machines.
+Gerkey and Matari\'{c} \cite{gerkey2004} formalized the Multi-Robot Task Allocation (MRTA) taxonomy. Smith's Contract Net Protocol \cite{smith1980} provides a decentralized negotiation framework for task distribution. Modern MAS surveys \cite{dorri2018} highlight the integration of reinforcement learning for dynamic scheduling, though without formal competitive guarantees. In the load balancing domain, the ``Power of Two Choices'' paradigm \cite{azar1999, mitzenmacher2001} demonstrates that sampling just two agents and choosing the less loaded one reduces maximum load exponentially. Koutsoupias and Papadimitriou \cite{koutsoupias1999} introduced the Price of Anarchy, establishing connections between selfish scheduling and worst-case makespan.
 
 %=====================================================================
 \section{Problem Formulation}
@@ -277,13 +273,13 @@ HAS ($\alpha$=0.7) & 1.033$\pm$0.009 & 1.028$\pm$0.009 & 1.024$\pm$0.007 \\
 
 Our experimental results reveal several insights:
 
-\textbf{Online greedy is remarkably effective in practice.} Despite theoretical worst-case ratios of $O(\log n)$ for heterogeneous machines \cite{aspnes1997, awerbuch1995}, the empirical competitive ratio of online greedy (ECT) remains within 3\% of optimal across all tested configurations. This suggests that adversarial inputs rarely occur in realistic workload distributions, consistent with the observations of Sgall \cite{sgall1998} and Azar \cite{azar1998}.
+\textbf{Online greedy is remarkably effective in practice.} Despite theoretical worst-case ratios of $O(\log n)$ for heterogeneous machines \cite{aspnes1997}, the empirical competitive ratio of online greedy (ECT) remains within 3\% of optimal across all tested configurations. This suggests that adversarial inputs rarely occur in realistic workload distributions, consistent with observations in the online scheduling literature \cite{sgall1998}.
 
 \textbf{Batching provides diminishing returns on uniform workloads.} Fig.~\ref{fig:alpha} shows that increasing $\alpha$ beyond 0.3 yields marginal improvement for uniform task distributions, suggesting that a small batch suffices to capture most of the LPT benefit.
 
-\textbf{Heterogeneity amplifies baseline inefficiency.} Table~\ref{tab:results} shows that Random and Round Robin schedulers degrade significantly (3--4$\times$ worse) on heterogeneous agents, while greedy-based algorithms maintain near-optimal performance. This validates the ECT rule as essential for heterogeneous MAS and aligns with the Power of Two Choices literature \cite{mitzenmacher2001, vocking2003}.
+\textbf{Heterogeneity amplifies baseline inefficiency.} Table~\ref{tab:results} shows that Random and Round Robin schedulers degrade significantly (3--4$\times$ worse) on heterogeneous agents, while greedy-based algorithms maintain near-optimal performance. This validates the ECT rule as essential for heterogeneous MAS and aligns with the Power of Two Choices literature \cite{mitzenmacher2001}.
 
-\textbf{The ``cost of online'' is small in practice.} The gap between Online Greedy and Offline LPT is only $\approx$3\%, far below the theoretical worst-case bound of $(2-1/M) / (4/3-1/3M) \approx 1.4$. This has practical implications for MAS design: the latency benefit of immediate assignment rarely costs significant makespan. Similar observations arise in game-theoretic settings, where Even-Dar et al. \cite{evendar2007} showed that Nash equilibria in load-balancing games converge rapidly, limiting the real-world impact of selfish behavior \cite{koutsoupias1999, christodoulou2005}.
+\textbf{The ``cost of online'' is small in practice.} The gap between Online Greedy and Offline LPT is only $\approx$3\%, far below the theoretical worst-case bound of $(2-1/M) / (4/3-1/3M) \approx 1.4$. This has practical implications for MAS design: the latency benefit of immediate assignment rarely costs significant makespan, even in settings where the Price of Anarchy is known to be non-trivial \cite{koutsoupias1999}.
 
 %=====================================================================
 \section{Conclusion and Future Work}
@@ -297,234 +293,134 @@ We presented the Hybrid Adaptive Scheduler (HAS), a parameterized algorithm for 
     \item The empirical competitive ratios of all greedy-based schedulers remain within 3\% of optimal for realistic workload distributions.
 \end{enumerate}
 
-\textbf{Future work} includes extending HAS to the preemptive setting (where tasks can be migrated between agents), incorporating learning-augmented predictions to improve online decisions \cite{pruhs2004, im2014}, and evaluating HAS in decentralized MAS architectures using auction-based protocols \cite{smith1980, dias2006, otte2020}. Mechanism design considerations \cite{nisan2001} for truthful scheduling with strategic agents present another promising direction. Additionally, extending the competitive analysis to the $R||C_{\max}$ (fully unrelated) model \cite{skutella2016, svensson2012} with formal lower bounds on the achievable improvement from batching remains an open theoretical question.
+\textbf{Future work} includes extending HAS to the preemptive setting (where tasks can be migrated between agents), incorporating learning-augmented predictions to improve online decisions \cite{pruhs2004, im2014}, and evaluating HAS in decentralized MAS architectures using the Contract Net Protocol \cite{smith1980}. Additionally, extending the competitive analysis to the $R||C_{\max}$ (fully unrelated) model with formal lower bounds on the achievable improvement from batching remains an open theoretical question.
 
 %=====================================================================
-% References (inline — no external .bib file needed)
+% References
 %=====================================================================
-\begin{thebibliography}{10}
+\begin{thebibliography}{22}
 
+% [1] Scheduling textbook — notation, problem formulation
 \bibitem{pinedo2016}
 M.~L. Pinedo, \emph{Scheduling: Theory, Algorithms, and Systems}, 5th~ed.\hskip
   1em plus 0.5em minus 0.4em\relax Springer, 2016.
 
+% [2] MRTA taxonomy
 \bibitem{gerkey2004}
 B.~P. Gerkey and M.~J. Matari\'{c}, ``A formal analysis and taxonomy of task
   allocation in multi-robot systems,'' \emph{International Journal of Robotics
   Research}, vol.~23, no.~9, pp. 939--954, 2004.
 
-\bibitem{parker1998}
-L.~E. Parker, ``{ALLIANCE}: An architecture for fault tolerant multirobot
-  cooperation,'' \emph{IEEE Transactions on Robotics and Automation}, vol.~14,
-  no.~2, pp. 220--240, 1998.
+% [3] MAS survey
+\bibitem{dorri2018}
+A.~Dorri, S.~S. Kanhere, and R.~Jurdak, ``Multi-agent systems: A survey,''
+  \emph{IEEE Access}, vol.~6, pp. 28\,573--28\,593, 2018.
 
-\bibitem{dias2006}
-M.~B. Dias, R.~Zlot, N.~Kalra, and A.~Stentz, ``Market-based multirobot
-  coordination: A survey and analysis,'' \emph{Proceedings of the IEEE},
-  vol.~94, no.~7, pp. 1257--1270, 2006.
-
-\bibitem{mcnaughton1959}
-R.~McNaughton, ``Scheduling with deadlines and loss functions,''
-  \emph{Management Science}, vol.~6, no.~1, pp. 1--12, 1959.
-
-\bibitem{brucker2007}
-P.~Brucker, \emph{Scheduling Algorithms}, 5th~ed.\hskip 1em plus 0.5em minus
-  0.4em\relax Springer, 2007.
-
+% [4] Unrelated machines 2-approximation
 \bibitem{lenstra1990}
 J.~K. Lenstra, D.~B. Shmoys, and \'{E}.~Tardos, ``Approximation algorithms for
   scheduling unrelated parallel machines,'' \emph{Mathematical Programming},
   vol.~46, no.~1, pp. 259--271, 1990.
 
+% [5] NP-hardness
 \bibitem{garey1979}
 M.~R. Garey and D.~S. Johnson, \emph{Computers and Intractability: A Guide to
   the Theory of NP-Completeness}.\hskip 1em plus 0.5em minus 0.4em\relax W. H.
   Freeman, 1979.
 
+% [6] Bin-packing to scheduling
 \bibitem{coffman1978}
 E.~G. Coffman, M.~R. Garey, and D.~S. Johnson, ``An application of bin-packing
   to multiprocessor scheduling,'' \emph{SIAM Journal on Computing}, vol.~7,
   no.~1, pp. 1--17, 1978.
 
-\bibitem{williamson2011}
-D.~P. Williamson and D.~B. Shmoys, \emph{The Design of Approximation
-  Algorithms}.\hskip 1em plus 0.5em minus 0.4em\relax Cambridge University
-  Press, 2011.
-
+% [7] Online computation textbook
 \bibitem{borodin1998}
 A.~Borodin and R.~El-Yaniv, \emph{Online Computation and Competitive
   Analysis}.\hskip 1em plus 0.5em minus 0.4em\relax Cambridge University Press,
   1998.
 
+% [8] LPT rule — (4/3 - 1/3M) bound
 \bibitem{graham1969}
 R.~L. Graham, ``Bounds on multiprocessing timing anomalies,'' \emph{SIAM
   Journal on Applied Mathematics}, vol.~17, no.~2, pp. 416--429, 1969.
 
+% [9] List Scheduling — (2 - 1/M) bound
 \bibitem{graham1966}
 R.~L. Graham, ``Bounds for certain multiprocessing anomalies,'' \emph{Bell System
   Technical Journal}, vol.~45, no.~9, pp. 1563--1581, 1966.
 
+% [10] O(log n) lower bound for online unrelated machines
 \bibitem{aspnes1997}
 J.~Aspnes, Y.~Azar, A.~Fiat, S.~Plotkin, and O.~Waarts, ``On-line routing of
   virtual circuits with applications to load balancing and machine
   scheduling,'' \emph{Journal of the ACM}, vol.~44, no.~3, pp. 486--504, 1997.
 
-\bibitem{shmoys1995}
-D.~B. Shmoys, J.~Wein, and D.~P. Williamson, ``Scheduling parallel machines
-  on-line,'' \emph{SIAM Journal on Computing}, vol.~24, no.~6, pp. 1313--1331,
-  1995.
-
+% [11] PTAS for identical machines
 \bibitem{hochbaum1987}
 D.~S. Hochbaum and D.~B. Shmoys, ``Using dual approximation algorithms for
   scheduling problems: Theoretical and practical results,'' \emph{Journal of
   the ACM}, vol.~34, no.~1, pp. 144--162, 1987.
 
-\bibitem{epstein2004}
-L.~Epstein and J.~Sgall, ``Approximation schemes for scheduling on uniformly
-  related and identical parallel machines,'' \emph{Algorithmica}, vol.~39,
-  no.~1, pp. 43--57, 2004.
-
-\bibitem{skutella2016}
-M.~Skutella and J.~Verschae, ``A new approximation algorithm for the unrelated
-  parallel machine scheduling problem,'' \emph{Operations Research Letters},
-  vol.~44, no.~5, pp. 634--638, 2016.
-
-\bibitem{svensson2012}
-O.~Svensson, ``Santa Claus schedules jobs on unrelated machines,'' \emph{SIAM
-  Journal on Computing}, vol.~41, no.~5, pp. 1318--1341, 2012.
-
-\bibitem{bansal2006}
-N.~Bansal and M.~Srinivasan, ``The Santa Claus problem,'' in \emph{Proc. 38th
-  Annual ACM Symposium on Theory of Computing (STOC '06)}, 2006, pp. 31--40.
-
+% [12] Competitive analysis framework
 \bibitem{sleator1985}
 D.~D. Sleator and R.~E. Tarjan, ``Amortized efficiency of list update and
   paging rules,'' \emph{Communications of the ACM}, vol.~28, no.~2, pp.
   202--208, 1985.
 
+% [13] Improved online bounds
 \bibitem{albers1999}
 S.~Albers, ``Better bounds for online scheduling,'' \emph{SIAM Journal on
   Computing}, vol.~29, no.~2, pp. 459--473, 1999.
 
-\bibitem{bartal1995}
-Y.~Bartal, A.~Fiat, H.~Karloff, and R.~Vohra, ``New algorithms for an ancient
-  scheduling problem,'' \emph{Journal of Computer and System Sciences},
-  vol.~51, no.~3, pp. 359--366, 1995.
-
-\bibitem{karger1996}
-D.~R. Karger, S.~J. Phillips, and E.~Torng, ``A better algorithm for an ancient
-  scheduling problem,'' \emph{Journal of Algorithms}, vol.~20, no.~2, pp.
-  400--430, 1996.
-
+% [14] Online bound 1.9201
 \bibitem{fleischer2000}
 R.~Fleischer and M.~Wahl, ``On-line scheduling revisited,'' \emph{Journal of
   Scheduling}, vol.~3, no.~6, pp. 343--353, 2000.
 
+% [15] Online parallel machine scheduling
+\bibitem{shmoys1995}
+D.~B. Shmoys, J.~Wein, and D.~P. Williamson, ``Scheduling parallel machines
+  on-line,'' \emph{SIAM Journal on Computing}, vol.~24, no.~6, pp. 1313--1331,
+  1995.
+
+% [16] Online scheduling survey
 \bibitem{sgall1998}
 J.~Sgall, ``On-line scheduling --- a survey,'' in \emph{Online Algorithms: The
   State of the Art}, ser. Lecture Notes in Computer Science.\hskip 1em plus
   0.5em minus 0.4em\relax Springer, 1998, vol. 1442, pp. 196--231.
 
-\bibitem{awerbuch1995}
-B.~Awerbuch, Y.~Azar, E.~F. Grove, M.-Y. Kao, P.~Krishnan, and J.~S. Vitter,
-  ``Load balancing in the {$L_p$} norm,'' in \emph{Proc. 36th Annual Symposium
-  on Foundations of Computer Science (FOCS '95)}, 1995, pp. 383--391.
-
-\bibitem{korsah2013}
-G.~A. Korsah, A.~Stentz, and M.~B. Dias, ``A comprehensive taxonomy for
-  multi-robot task allocation,'' \emph{International Journal of Robotics
-  Research}, vol.~32, no.~12, pp. 1495--1512, 2013.
-
+% [17] Contract Net Protocol
 \bibitem{smith1980}
 R.~G. Smith, ``The contract net protocol: High-level communication and control
   in a distributed problem solver,'' \emph{IEEE Transactions on Computers},
   vol. C-29, no.~12, pp. 1104--1113, 1980.
 
-\bibitem{otte2020}
-M.~Otte, M.~J. Kuhlman, D.~Sofge, and C.-H.~J. Jones, ``Auctions for
-  multi-robot task allocation in communication limited environments,''
-  \emph{Autonomous Robots}, vol.~44, no. 3--4, pp. 547--584, 2020.
-
-\bibitem{dorri2018}
-A.~Dorri, S.~S. Kanhere, and R.~Jurdak, ``Multi-agent systems: A survey,''
-  \emph{IEEE Access}, vol.~6, pp. 28\,573--28\,593, 2018.
-
-\bibitem{wooldridge1995}
-M.~Wooldridge and N.~R. Jennings, ``Intelligent agents: Theory and practice,''
-  \emph{The Knowledge Engineering Review}, vol.~10, no.~2, pp. 115--152, 1995.
-
+% [18] Balanced allocations / Power of Two Choices
 \bibitem{azar1999}
 Y.~Azar, A.~Z. Broder, A.~R. Karlin, and E.~Upfal, ``Balanced allocations,''
   \emph{SIAM Journal on Computing}, vol.~29, no.~1, pp. 180--200, 1999.
 
+% [19] Power of Two Choices
 \bibitem{mitzenmacher2001}
 M.~Mitzenmacher, ``The power of two choices in randomized load balancing,''
   \emph{IEEE Transactions on Parallel and Distributed Systems}, vol.~12,
   no.~10, pp. 1094--1104, 2001.
 
-\bibitem{vocking2003}
-B.~V\"{o}cking, ``How asymmetry helps load balancing,'' \emph{Journal of the
-  ACM}, vol.~50, no.~4, pp. 568--589, 2003.
-
-\bibitem{berenbrink2006}
-P.~Berenbrink, A.~Czumaj, A.~Steger, and B.~V\"{o}cking, ``Balanced
-  allocations: The heavily loaded case,'' \emph{SIAM Journal on Computing},
-  vol.~35, no.~6, pp. 1350--1385, 2006.
-
+% [20] Price of Anarchy
 \bibitem{koutsoupias1999}
 E.~Koutsoupias and C.~H. Papadimitriou, ``Worst-case equilibria,'' in
   \emph{Proc. 16th Annual Symposium on Theoretical Aspects of Computer Science
   (STACS '99)}, ser. Lecture Notes in Computer Science, vol. 1563.\hskip 1em
   plus 0.5em minus 0.4em\relax Springer, 1999, pp. 404--413.
 
-\bibitem{roughgarden2002}
-T.~Roughgarden and \'{E}.~Tardos, ``How bad is selfish routing?'' \emph{Journal of
-  the ACM}, vol.~49, no.~2, pp. 236--259, 2002.
-
-\bibitem{christodoulou2005}
-G.~Christodoulou and E.~Koutsoupias, ``The price of anarchy of finite
-  congestion games,'' in \emph{Proc. 37th Annual ACM Symposium on Theory of
-  Computing (STOC '05)}, 2005, pp. 67--73.
-
-\bibitem{immorlica2009}
-N.~Immorlica, L.~Li, V.~S. Mirrokni, and A.~S. Schulz, ``Coordination
-  mechanisms for selfish scheduling,'' \emph{Theoretical Computer Science},
-  vol. 410, no.~17, pp. 1589--1598, 2009.
-
-\bibitem{nisan2001}
-N.~Nisan and A.~Ronen, ``Algorithmic mechanism design,'' \emph{Games and
-  Economic Behavior}, vol.~35, no. 1--2, pp. 166--196, 2001.
-
-\bibitem{leung2004}
-J.~Y.-T. Leung, Ed., \emph{Handbook of Scheduling: Algorithms, Models, and
-  Performance Analysis}.\hskip 1em plus 0.5em minus 0.4em\relax CRC Press,
-  2004.
-
-\bibitem{ibarra1977}
-O.~H. Ibarra and C.~E. Kim, ``Heuristic algorithms for scheduling independent
-  tasks on nonidentical processors,'' \emph{Journal of the ACM}, vol.~24,
-  no.~2, pp. 280--289, 1977.
-
+% [21] Online scheduling handbook chapter
 \bibitem{pruhs2004}
 K.~Pruhs, J.~Sgall, and E.~Torng, ``Online scheduling,'' in \emph{Handbook of
   Scheduling: Algorithms, Models, and Performance Analysis}, J.~Y.-T. Leung,
   Ed.\hskip 1em plus 0.5em minus 0.4em\relax CRC Press, 2004, ch.~15.
 
-\bibitem{azar1998}
-Y.~Azar, ``On-line load balancing,'' in \emph{Online Algorithms: The State of
-  the Art}, ser. Lecture Notes in Computer Science.\hskip 1em plus 0.5em minus
-  0.4em\relax Springer, 1998, vol. 1442, pp. 166--195.
-
-\bibitem{cormen2022}
-T.~H. Cormen, C.~E. Leiserson, R.~L. Rivest, and C.~Stein, \emph{Introduction
-  to Algorithms}, 4th~ed.\hskip 1em plus 0.5em minus 0.4em\relax MIT Press,
-  2022.
-
-\bibitem{evendar2007}
-E.~Even-Dar, A.~Kesselman, and Y.~Mansour, ``Convergence time to {Nash}
-  equilibrium in load balancing,'' \emph{ACM Transactions on Algorithms},
-  vol.~3, no.~3, p.~32, 2007.
-
+% [22] Competitive equilibria for scheduling
 \bibitem{im2014}
 S.~Im, S.~Kulkarni, and K.~Munagala, ``Competitive algorithms from competitive
   equilibria: Non-clairvoyant scheduling under polyhedral constraints,'' in
