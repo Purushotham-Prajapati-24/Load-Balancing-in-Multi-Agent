@@ -9,21 +9,29 @@
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{url}
+\usepackage{amsthm}
+
+\newtheorem{theorem}{Theorem}
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\IEEEoverridecommandlockouts
+% IEEE copyright notice — update conference name and year before submission
+\IEEEpubid{\makebox[\columnwidth]{978-1-XXXX-XXXX-X/25/\$31.00~\copyright~2025 IEEE \hfill}
+\hspace{\columnsep}\makebox[\columnwidth]{ }}
 
 \begin{document}
 
 \title{Dynamic Load Balancing in Multi-Agent Task Orchestration: A Hybrid Adaptive Scheduling Approach}
 
 \author{
-\IEEEauthorblockN{Purushottam}
+\IEEEauthorblockN{Purushotham Prajapati}
 \IEEEauthorblockA{%
-Department of Computer Science \\
-\textit{University Name} \\
-City, Country \\
-email@institution.edu}
+Department of Computer Science and Engineering \\
+\textit{Vallurupalli Nageswara Rao Vignana Jyothi Institute of Engineering and Technology (VNRVJIET)} \\
+Hyderabad, India \\
+purushothamprajapati7473@gmail.com}
 }
 
 \maketitle
@@ -40,11 +48,11 @@ multi-agent systems, task scheduling, makespan minimization, competitive analysi
 \section{Introduction}
 %=====================================================================
 
-The orchestration of heterogeneous tasks across multi-agent systems (MAS) is a fundamental challenge in distributed computing, arising in domains from cloud computing \cite{pinedo2016} to warehouse robotics \cite{gerkey2004} and satellite constellation management. The core optimization problem is to assign $N$ tasks with varying processing requirements to $M$ agents with diverse computational capacities, minimizing the \emph{makespan} $C_{\max}$---the completion time of the last finishing agent.
+The orchestration of heterogeneous tasks across multi-agent systems (MAS) is a fundamental challenge in distributed computing, arising in domains from cloud computing \cite{pinedo2016} to warehouse robotics \cite{gerkey2004, parker1998} and market-based multi-robot coordination \cite{dias2006}. The core optimization problem is to assign $N$ tasks with varying processing requirements to $M$ agents with diverse computational capacities, minimizing the \emph{makespan} $C_{\max}$---the completion time of the last finishing agent. This problem has roots dating to McNaughton's foundational work on scheduling with deadlines \cite{mcnaughton1959} and has been extensively cataloged in scheduling textbooks \cite{brucker2007, pinedo2016}.
 
-In scheduling theory, this problem is denoted $R||C_{\max}$ for unrelated machines, where each task-agent pair $(j, i)$ has an arbitrary processing time $p_{ij}$ \cite{lenstra1990}. Even the simpler identical-machine variant $P||C_{\max}$ is strongly NP-hard \cite{garey1979}, motivating decades of research into approximation algorithms and online heuristics.
+In scheduling theory, this problem is denoted $R||C_{\max}$ for unrelated machines, where each task-agent pair $(j, i)$ has an arbitrary processing time $p_{ij}$ \cite{lenstra1990}. Even the simpler identical-machine variant $P||C_{\max}$ is strongly NP-hard \cite{garey1979}, as established through connections to bin packing \cite{coffman1978}. This motivates decades of research into approximation algorithms \cite{williamson2011} and online heuristics \cite{borodin1998}.
 
-Two paradigms dominate the literature. \emph{Offline algorithms}, exemplified by Graham's Longest Processing Time (LPT) rule \cite{graham1969}, assume complete task knowledge and achieve provable approximation ratios. \emph{Online algorithms}, such as List Scheduling \cite{graham1966}, handle tasks as they arrive but sacrifice optimality. Classical results show that no deterministic online algorithm for unrelated machines can achieve a competitive ratio better than $\Omega(\log n)$ \cite{aspnes1997}.
+Two paradigms dominate the literature. \emph{Offline algorithms}, exemplified by Graham's Longest Processing Time (LPT) rule \cite{graham1969}, assume complete task knowledge and achieve provable approximation ratios. \emph{Online algorithms}, such as List Scheduling \cite{graham1966}, handle tasks as they arrive but sacrifice optimality. Classical results show that no deterministic online algorithm for unrelated machines can achieve a competitive ratio better than $\Omega(\log n)$ \cite{aspnes1997, shmoys1995}.
 
 \textbf{Contribution.} We propose the \emph{Hybrid Adaptive Scheduler (HAS)}, which bridges the offline-online divide through a tunable batch parameter $\alpha$. Rather than committing fully to either paradigm, HAS collects a fraction $\alpha$ of arriving tasks into a buffer, applies LPT scheduling to the batch, then handles remaining tasks online. We provide:
 \begin{enumerate}
@@ -60,15 +68,19 @@ Two paradigms dominate the literature. \emph{Offline algorithms}, exemplified by
 
 \subsection{Offline Scheduling}
 
-Graham \cite{graham1966} introduced List Scheduling for identical parallel machines, proving a $(2 - 1/M)$ approximation ratio. His subsequent LPT analysis \cite{graham1969} improved this to $(4/3 - 1/3M)$. For unrelated machines, Lenstra, Shmoys, and Tardos \cite{lenstra1990} achieved a 2-approximation via LP rounding and proved a $3/2$ inapproximability lower bound. Hochbaum and Shmoys \cite{hochbaum1987} developed a Polynomial Time Approximation Scheme (PTAS) for identical machines with fixed $M$.
+Graham \cite{graham1966} introduced List Scheduling for identical parallel machines, proving a $(2 - 1/M)$ approximation ratio. His subsequent LPT analysis \cite{graham1969} improved this to $(4/3 - 1/3M)$. For unrelated machines, Lenstra, Shmoys, and Tardos \cite{lenstra1990} achieved a 2-approximation via LP rounding and proved a $3/2$ inapproximability lower bound. Hochbaum and Shmoys \cite{hochbaum1987} developed a PTAS for identical machines with fixed $M$, and Epstein and Sgall \cite{epstein2004} extended approximation schemes to uniformly related machines. More recently, Skutella and Verschae \cite{skutella2016} proposed improved approximations for unrelated parallel machines, while Svensson \cite{svensson2012} and Bansal and Srinivasan \cite{bansal2006} studied the related max-min (Santa Claus) variant, establishing deeper structural insights into machine scheduling.
 
 \subsection{Online Scheduling and Competitive Analysis}
 
-The competitive analysis framework, formalized by Sleator and Tarjan \cite{sleator1985}, measures online algorithm performance against an omniscient offline adversary. For identical machines, online List Scheduling is $(2-1/M)$-competitive \cite{graham1966}. Fleischer and Wahl \cite{fleischer2000} improved the deterministic bound to $1.9201$. For unrelated machines, Aspnes et al. \cite{aspnes1997} proved an $\Omega(\log n)$ lower bound and provided a matching $O(\log n)$-competitive algorithm using exponential potential functions.
+The competitive analysis framework, formalized by Sleator and Tarjan \cite{sleator1985} and comprehensively surveyed by Borodin and El-Yaniv \cite{borodin1998}, measures online algorithm performance against an omniscient offline adversary. For identical machines, online List Scheduling is $(2-1/M)$-competitive \cite{graham1966}. Albers \cite{albers1999} improved the deterministic upper bound, while Bartal et al. \cite{bartal1995} and Karger et al. \cite{karger1996} developed new algorithmic paradigms for the ancient scheduling problem. Fleischer and Wahl \cite{fleischer2000} further tightened the deterministic bound to $1.9201$. Shmoys, Wein, and Williamson \cite{shmoys1995} studied online scheduling on parallel machines, and Sgall \cite{sgall1998} provided a comprehensive survey of the field. For unrelated machines, Aspnes et al. \cite{aspnes1997} proved an $\Omega(\log n)$ lower bound and provided a matching $O(\log n)$-competitive algorithm using exponential potential functions. Awerbuch et al. \cite{awerbuch1995} generalized online load balancing to the $L_p$ norm.
 
 \subsection{Multi-Agent Task Allocation}
 
-Gerkey and Matari\'{c} \cite{gerkey2004} formalized Multi-Robot Task Allocation (MRTA) taxonomy along axes of agent capability, task requirements, and time-scale. Smith's Contract Net Protocol \cite{smith1980} provides a decentralized negotiation framework for task distribution. Recent work integrates reinforcement learning for dynamic scheduling \cite{Hsu2018}, though without formal competitive guarantees.
+Gerkey and Matari\'{c} \cite{gerkey2004} formalized Multi-Robot Task Allocation (MRTA) taxonomy along three axes, later extended by Korsah et al. \cite{korsah2013}. Smith's Contract Net Protocol \cite{smith1980} provides a decentralized negotiation framework, while Parker's ALLIANCE architecture \cite{parker1998} introduced fault-tolerant multi-robot cooperation. Market-based coordination mechanisms have been extensively surveyed by Dias et al. \cite{dias2006}, and recent auction-based approaches by Otte et al. \cite{otte2020} address communication-limited environments. Modern MAS surveys \cite{dorri2018, wooldridge1995} highlight the integration of reinforcement learning for dynamic scheduling, though without formal competitive guarantees.
+
+\subsection{Load Balancing and Game-Theoretic Aspects}
+
+In decentralized settings, the ``Power of Two Choices'' paradigm \cite{azar1999, mitzenmacher2001} demonstrates that sampling just two agents and choosing the less loaded one reduces maximum load exponentially. V\"{o}cking \cite{vocking2003} showed that asymmetric tie-breaking further improves load balancing, and Berenbrink et al. \cite{berenbrink2006} extended these results to the heavily loaded case. When agents act selfishly, Koutsoupias and Papadimitriou \cite{koutsoupias1999} introduced the Price of Anarchy (PoA), and Roughgarden and Tardos \cite{roughgarden2002} established tight PoA bounds for selfish routing. Christodoulou and Koutsoupias \cite{christodoulou2005} analyzed the PoA for finite congestion games, while Immorlica et al. \cite{immorlica2009} designed coordination mechanisms to mitigate selfishness. Nisan and Ronen \cite{nisan2001} formalized algorithmic mechanism design for scheduling on unrelated machines.
 
 %=====================================================================
 \section{Problem Formulation}
@@ -265,13 +277,13 @@ HAS ($\alpha$=0.7) & 1.033$\pm$0.009 & 1.028$\pm$0.009 & 1.024$\pm$0.007 \\
 
 Our experimental results reveal several insights:
 
-\textbf{Online greedy is remarkably effective in practice.} Despite theoretical worst-case ratios of $O(\log n)$ for heterogeneous machines, the empirical competitive ratio of online greedy (ECT) remains within 3\% of optimal across all tested configurations. This suggests that adversarial inputs rarely occur in realistic workload distributions.
+\textbf{Online greedy is remarkably effective in practice.} Despite theoretical worst-case ratios of $O(\log n)$ for heterogeneous machines \cite{aspnes1997, awerbuch1995}, the empirical competitive ratio of online greedy (ECT) remains within 3\% of optimal across all tested configurations. This suggests that adversarial inputs rarely occur in realistic workload distributions, consistent with the observations of Sgall \cite{sgall1998} and Azar \cite{azar1998}.
 
 \textbf{Batching provides diminishing returns on uniform workloads.} Fig.~\ref{fig:alpha} shows that increasing $\alpha$ beyond 0.3 yields marginal improvement for uniform task distributions, suggesting that a small batch suffices to capture most of the LPT benefit.
 
-\textbf{Heterogeneity amplifies baseline inefficiency.} Table~\ref{tab:results} shows that Random and Round Robin schedulers degrade significantly (3--4$\times$ worse) on heterogeneous agents, while greedy-based algorithms maintain near-optimal performance. This validates the ECT rule as essential for heterogeneous MAS.
+\textbf{Heterogeneity amplifies baseline inefficiency.} Table~\ref{tab:results} shows that Random and Round Robin schedulers degrade significantly (3--4$\times$ worse) on heterogeneous agents, while greedy-based algorithms maintain near-optimal performance. This validates the ECT rule as essential for heterogeneous MAS and aligns with the Power of Two Choices literature \cite{mitzenmacher2001, vocking2003}.
 
-\textbf{The ``cost of online'' is small in practice.} The gap between Online Greedy and Offline LPT is only $\approx$3\%, far below the theoretical worst-case bound of $(2-1/M) / (4/3-1/3M) \approx 1.4$. This has practical implications for MAS design: the latency benefit of immediate assignment rarely costs significant makespan.
+\textbf{The ``cost of online'' is small in practice.} The gap between Online Greedy and Offline LPT is only $\approx$3\%, far below the theoretical worst-case bound of $(2-1/M) / (4/3-1/3M) \approx 1.4$. This has practical implications for MAS design: the latency benefit of immediate assignment rarely costs significant makespan. Similar observations arise in game-theoretic settings, where Even-Dar et al. \cite{evendar2007} showed that Nash equilibria in load-balancing games converge rapidly, limiting the real-world impact of selfish behavior \cite{koutsoupias1999, christodoulou2005}.
 
 %=====================================================================
 \section{Conclusion and Future Work}
@@ -285,7 +297,7 @@ We presented the Hybrid Adaptive Scheduler (HAS), a parameterized algorithm for 
     \item The empirical competitive ratios of all greedy-based schedulers remain within 3\% of optimal for realistic workload distributions.
 \end{enumerate}
 
-\textbf{Future work} includes extending HAS to the preemptive setting (where tasks can be migrated between agents), incorporating learning-augmented predictions to improve online decisions \cite{Purohit2018}, and evaluating HAS in decentralized MAS architectures using the Contract Net Protocol \cite{smith1980}. Additionally, extending the competitive analysis to the $R||C_{\max}$ (fully unrelated) model with formal lower bounds on the achievable improvement from batching remains an open theoretical question.
+\textbf{Future work} includes extending HAS to the preemptive setting (where tasks can be migrated between agents), incorporating learning-augmented predictions to improve online decisions \cite{pruhs2004, im2014}, and evaluating HAS in decentralized MAS architectures using auction-based protocols \cite{smith1980, dias2006, otte2020}. Mechanism design considerations \cite{nisan2001} for truthful scheduling with strategic agents present another promising direction. Additionally, extending the competitive analysis to the $R||C_{\max}$ (fully unrelated) model \cite{skutella2016, svensson2012} with formal lower bounds on the achievable improvement from batching remains an open theoretical question.
 
 %=====================================================================
 \bibliographystyle{IEEEtran}
