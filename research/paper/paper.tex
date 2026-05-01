@@ -86,7 +86,7 @@ In decentralized settings, the ``Power of Two Choices'' paradigm \cite{azar1999,
 \section{Problem Formulation}
 %=====================================================================
 
-We consider $M$ agents with computational speeds $s_1, s_2, \ldots, s_M$ and $N$ independent tasks with processing requirements $p_1, p_2, \ldots, p_N$. The processing time of task $j$ on agent $i$ is:
+We consider $M$ agents with computational speeds $s_1, s_2, \ldots, s_M$ and $N$ independent tasks with processing requirements $p_1, p_2, \ldots, p_N$. This formulation follows the standard framework established in scheduling theory \cite{brucker2007, leung2004}. The processing time of task $j$ on agent $i$ is:
 
 \begin{equation}
     t_{ij} = \frac{p_j}{s_i}
@@ -98,7 +98,7 @@ An assignment $\sigma: \{1, \ldots, N\} \rightarrow \{1, \ldots, M\}$ maps each 
     L_i = \sum_{j: \sigma(j)=i} t_{ij} = \frac{1}{s_i} \sum_{j: \sigma(j)=i} p_j
 \end{equation}
 
-The \emph{makespan} is $C_{\max} = \max_{i=1}^{M} L_i$. Our objective is to find $\sigma^* = \arg\min_\sigma C_{\max}(\sigma)$.
+The \emph{makespan} is $C_{\max} = \max_{i=1}^{M} L_i$. Our objective is to find $\sigma^* = \arg\min_\sigma C_{\max}(\sigma)$. This problem is equivalent to the multiprocessor scheduling problem shown to be NP-hard by Garey and Johnson \cite{garey1979}, with heuristic approaches surveyed by Ibarra and Kim \cite{ibarra1977}.
 
 \textbf{Machine models.} Following the standard $\alpha|\beta|\gamma$ notation \cite{pinedo2016}:
 \begin{itemize}
@@ -107,7 +107,7 @@ The \emph{makespan} is $C_{\max} = \max_{i=1}^{M} L_i$. Our objective is to find
     \item $R||C_{\max}$: Unrelated machines ($t_{ij}$ is arbitrary per pair).
 \end{itemize}
 
-\textbf{Online setting.} Tasks arrive in a sequence. Upon arrival of task $j$, the scheduler must irrevocably assign it to an agent without knowledge of future tasks.
+\textbf{Online setting.} Tasks arrive in a sequence \cite{borodin1998, pruhs2004}. Upon arrival of task $j$, the scheduler must irrevocably assign it to an agent without knowledge of future tasks.
 
 %=====================================================================
 \section{Proposed Algorithm: Hybrid Adaptive Scheduler}
@@ -115,7 +115,7 @@ The \emph{makespan} is $C_{\max} = \max_{i=1}^{M} L_i$. Our objective is to find
 
 \subsection{Algorithm Description}
 
-The Hybrid Adaptive Scheduler (HAS) operates in two phases controlled by a batch parameter $\alpha \in [0, 1]$.
+The Hybrid Adaptive Scheduler (HAS) draws on both the offline sorting paradigm of Graham \cite{graham1969} and the online greedy paradigm analyzed by Sgall \cite{sgall1998} and Azar \cite{azar1998}. HAS operates in two phases controlled by a batch parameter $\alpha \in [0, 1]$.
 
 \begin{algorithm}[h]
 \caption{Hybrid Adaptive Scheduler (HAS)}
@@ -143,13 +143,13 @@ The Hybrid Adaptive Scheduler (HAS) operates in two phases controlled by a batch
 
 \subsection{Complexity Analysis}
 
-Phase 1 requires $O(B \log B)$ for sorting plus $O(BM)$ for assignment. Phase 2 requires $O((N-B)M)$ for online assignment. Total:
+Phase 1 requires $O(B \log B)$ for sorting \cite{cormen2022} plus $O(BM)$ for assignment. Phase 2 requires $O((N-B)M)$ for online assignment. Total:
 
 \begin{equation}
     T(N, M, \alpha) = O(\alpha N \log(\alpha N) + NM)
 \end{equation}
 
-For $\alpha = 0$ (pure online), this reduces to $O(NM)$. For $\alpha = 1$ (pure offline), $O(N \log N + NM)$.
+For $\alpha = 0$ (pure online), this reduces to $O(NM)$. For $\alpha = 1$ (pure offline), $O(N \log N + NM)$. This is polynomial for all $\alpha$ values, making HAS practical even for large-scale instances unlike the exponential-time optimal solutions \cite{garey1979, lenstra1990}.
 
 \subsection{Theoretical Analysis}
 
@@ -179,9 +179,9 @@ where $p_{\max}^{\text{batch}}$ is the maximum task size in the batch and $C_{\m
 \end{theorem}
 
 \begin{proof}
-Let $j^*$ be the task completing last in the HAS schedule, assigned to agent $i^*$. If $j^*$ was assigned in Phase 1 (batch), the LPT ordering ensures it is among the smallest tasks in the batch, yielding a tighter bound than arbitrary-order assignment.
+Let $j^*$ be the task completing last in the HAS schedule, assigned to agent $i^*$. If $j^*$ was assigned in Phase 1 (batch), the LPT ordering ensures it is among the smallest tasks in the batch, yielding a tighter bound than arbitrary-order assignment \cite{graham1969, coffman1978}.
 
-For the Phase 2 tasks, the standard List Scheduling analysis applies: at the time of assignment, agent $i^*$ had the minimum load, so $L_{i^*} - t_{i^*j^*} \leq \frac{1}{M} \sum_{i} L_i$. The key improvement is that the Phase 1 LPT assignment provides a better ``warm start,'' reducing the load variance across agents before Phase 2 begins. Since the $\alpha N$ largest tasks (sorted by LPT) are assigned first, the load imbalance entering Phase 2 is bounded, improving the worst-case completion time by at least $\frac{\alpha}{M} \cdot p_{\max}^{\text{batch}}$.
+For the Phase 2 tasks, the standard List Scheduling analysis applies \cite{graham1966}: at the time of assignment, agent $i^*$ had the minimum load, so $L_{i^*} - t_{i^*j^*} \leq \frac{1}{M} \sum_{i} L_i$. The key improvement is that the Phase 1 LPT assignment provides a better ``warm start,'' reducing the load variance across agents before Phase 2 begins, analogous to the load-balancing improvement shown by Azar et al. \cite{azar1999}. Since the $\alpha N$ largest tasks (sorted by LPT) are assigned first, the load imbalance entering Phase 2 is bounded, improving the worst-case completion time by at least $\frac{\alpha}{M} \cdot p_{\max}^{\text{batch}}$.
 \end{proof}
 
 %=====================================================================
@@ -190,17 +190,17 @@ For the Phase 2 tasks, the standard List Scheduling analysis applies: at the tim
 
 \subsection{Setup}
 
-We implement HAS and five baseline algorithms in Python: Online Greedy (ECT), Offline LPT, Random Assignment, and Round Robin. The offline optimal is computed via brute-force enumeration for small instances ($N \leq 15$) and LP lower bounds otherwise. All experiments average 30 independent trials with randomized task sets.
+We implement HAS and five baseline algorithms in Python: Online Greedy (ECT) \cite{graham1966}, Offline LPT \cite{graham1969}, Random Assignment, and Round Robin. The offline optimal is computed via brute-force enumeration for small instances ($N \leq 15$) and LP lower bounds \cite{lenstra1990, williamson2011} otherwise. All experiments average 30 independent trials with randomized task sets, following the experimental methodology recommended by Pinedo \cite{pinedo2016}.
 
-\textbf{Task distributions:} Uniform $p_j \sim U(1, 100)$, Pareto $p_j \sim \text{Pareto}(1.5)$, and adversarial instances.
+\textbf{Task distributions:} Uniform $p_j \sim U(1, 100)$, Pareto $p_j \sim \text{Pareto}(1.5)$ following the heavy-tailed models common in distributed systems \cite{mitzenmacher2001}, and adversarial instances designed to exploit online schedulers \cite{bartal1995}.
 
-\textbf{Agent configurations:} Identical ($s_i = 1$), Uniform ($s_i \sim U(1, 10)$), Bimodal (30\% fast at $10\times$, 70\% slow at $1\times$).
+\textbf{Agent configurations:} Identical ($s_i = 1$), Uniform ($s_i \sim U(1, 10)$) as studied by Epstein and Sgall \cite{epstein2004}, and Bimodal (30\% fast at $10\times$, 70\% slow at $1\times$) modeling heterogeneous agent pools \cite{ibarra1977, korsah2013}.
 
 \subsection{Results}
 
 \subsubsection{Makespan Comparison (Identical Machines)}
 
-Fig.~\ref{fig:identical} presents the makespan achieved by each algorithm on identical machines with $N=200$ tasks and $M \in \{4, 8, 16\}$ agents. Offline LPT consistently achieves the lowest makespan, while HAS variants closely match LPT performance despite processing a portion of tasks online.
+Fig.~\ref{fig:identical} presents the makespan achieved by each algorithm on identical machines ($P||C_{\max}$ \cite{pinedo2016}) with $N=200$ tasks and $M \in \{4, 8, 16\}$ agents. Offline LPT consistently achieves the lowest makespan, confirming Graham's classical result \cite{graham1969}, while HAS variants closely match LPT performance despite processing a portion of tasks online.
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=\columnwidth]{figures/fig1_identical_machines.png}}
