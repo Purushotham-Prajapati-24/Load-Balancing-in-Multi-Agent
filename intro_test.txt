@@ -1,0 +1,17 @@
+﻿
+%=====================================================================In the field of distributed computing, the task of orchestrating heterogeneous workloads within multi-agent systems (MAS) presents a layered and complex challenge. This issue is pervasive, spanning various domains such as cloud infrastructure management \cite{pinedo2016}, robotic warehouse automation \cite{gerkey2004}, and the coordination of autonomous agents \cite{dorri2018}. At its core, this optimization problem involves the strategic assignment of $N$ tasks, each possessing unique processing demands, to a set of $M$ agents characterized by varied computational power. The ultimate goal is the minimization of the \emph{makespan} ($C_{\max}$), which marks the exact moment the final agent concludes its assigned work.
+
+In scheduling theory, this problem is formally denoted as $R||C_{\max}$ for unrelated machines, a scenario where each specific task-agent pairing $(j, i)$ is assigned an arbitrary processing time $p_{ij}$ \cite{lenstra1990}. Remarkably, even the simplified identical-machine variant ($P||C_{\max}$) remains strongly NP-hard \cite{garey1979}. This complexity, which stems from inherent links to the bin packing problem \cite{coffman1978}, has driven decades of investigation into both approximation algorithms and heuristic-driven online solutions \cite{borodin1998}.
+
+Unlike the rigid structure of batched methodologies, online greedy schedulers process tasks in real-time as they materialize, though this immediacy frequently comes at a significant cost to overall optimality. The existing literature is predominantly characterized by two distinct paradigms. \emph{Offline algorithms}, exemplified by Graham's Longest Processing Time (LPT) rule \cite{graham1969}, assume complete task knowledge and achieve provable approximation ratios. \emph{Online algorithms}, such as List Scheduling \cite{graham1966}, handle tasks as they arrive but sacrifice optimality. Well-established results indicate that no deterministic online algorithm for unrelated machines can achieve a competitive ratio better than $\Omega(\log n)$ \cite{aspnes1997}.
+
+\textbf{Contribution.} This paper introduces the \emph{Hybrid Adaptive Scheduler (HAS)}, an innovative approach that effectively reconciles the divide between offline and online paradigms by employing a tunable batch parameter, $\alpha$. Instead of adhering strictly to one methodology, HAS temporarily buffers a specific fraction $\alpha$ of incoming tasks, applies an LPT-based scheduling logic to this batch, and subsequently manages the remaining tasks in an online fashion. Our primary contributions include:
+\begin{enumerate}
+    \item A detailed formalization of the HAS algorithm along with a detailed complexity analysis;
+    \item A derivation of theoretical competitive ratio bounds expressed as a function of the parameter $\alpha$;
+    \item An extensive experimental evaluation across three distinct machine models ($P$, $Q$, and $R$), highlighting the practical advantages of our hybrid approach over traditional greedy scheduling;
+    \item A sensitivity analysis of the $\alpha$ parameter to identify optimal batching strategies for varied workload profiles.
+\end{enumerate}
+
+%=====================================================================
+

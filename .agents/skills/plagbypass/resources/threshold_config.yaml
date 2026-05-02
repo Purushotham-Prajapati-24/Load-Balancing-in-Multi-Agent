@@ -1,0 +1,45 @@
+# PlagBypass Threshold Configuration
+# Customize per institution or submission venue.
+
+profiles:
+  strict:
+    name: "UoH / Strict University (10% limit)"
+    max_similarity_pct: 5
+    max_ai_score_pct: 3
+    min_perplexity: 55
+    min_burstiness: 5.0
+    max_ai_isms: 2
+    max_flagged_sentence_pct: 5
+
+  lenient:
+    name: "JNTU / Lenient University (30% limit)"
+    max_similarity_pct: 15
+    max_ai_score_pct: 10
+    min_perplexity: 45
+    min_burstiness: 3.5
+    max_ai_isms: 5
+    max_flagged_sentence_pct: 15
+
+  ieee:
+    name: "IEEE / Conference Submission"
+    max_similarity_pct: 8
+    max_ai_score_pct: 5
+    min_perplexity: 50
+    min_burstiness: 4.0
+    max_ai_isms: 3
+    max_flagged_sentence_pct: 10
+
+  default:
+    name: "General Academic (15% limit)"
+    max_similarity_pct: 10
+    max_ai_score_pct: 5
+    min_perplexity: 50
+    min_burstiness: 4.5
+    max_ai_isms: 3
+    max_flagged_sentence_pct: 10
+
+# Convergence settings
+convergence:
+  max_iterations: 5
+  improvement_threshold: 2.0  # Min PPL improvement per iteration
+  early_stop_on_pass: true

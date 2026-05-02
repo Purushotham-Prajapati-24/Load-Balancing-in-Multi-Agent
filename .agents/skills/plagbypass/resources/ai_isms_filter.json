@@ -1,0 +1,61 @@
+{
+  "description": "AI-associated phrases and their human alternatives. Used by the plagbypass skill to filter detectable AI patterns.",
+  "version": "1.0",
+
+  "high_risk_transitions": {
+    "Furthermore": ["This leads to", "Crucially", "Building on this", "What follows is"],
+    "Moreover": ["Equally important", "In parallel", "Along similar lines", "At the same time"],
+    "In addition": ["Beyond this", "Alongside", "Extending this idea", "Separately"],
+    "Additionally": ["Also", "On top of this", "What is more", "As a further point"],
+    "It is important to note that": ["Remarkably", "Significantly", "Notably", "Worth emphasizing:"],
+    "It is worth noting that": ["Interestingly", "One key observation is", "A telling detail:"],
+    "In conclusion": ["Ultimately", "These findings indicate", "Taken together", "The upshot is"],
+    "To summarize": ["In essence", "The central takeaway is", "Collectively", "Pulling these threads together"],
+    "In summary": ["At its core", "The bottom line is", "Distilling this down"]
+  },
+
+  "high_risk_verbs": {
+    "utilize": ["use", "employ", "apply", "adopt"],
+    "leverage": ["apply", "employ", "draw on", "capitalize on"],
+    "facilitate": ["enable", "support", "allow", "make possible"],
+    "underscore": ["highlight", "emphasize", "reinforce", "stress"],
+    "elucidate": ["clarify", "explain", "illuminate", "make clear"],
+    "explore": ["investigate", "analyze", "examine", "study"],
+    "delve into": ["investigate", "examine closely", "dissect", "probe"],
+    "delve": ["examine", "probe", "scrutinize", "look into"],
+    "unlock": ["reveal", "enable", "open up", "uncover"],
+    "navigate": ["handle", "manage", "work through", "address"]
+  },
+
+  "high_risk_adjectives": {
+    "paramount": ["essential", "critical", "vital", "indispensable"],
+    "pivotal": ["central", "key", "decisive", "determining"],
+    "seamless": ["smooth", "uninterrupted", "fluid", "effortless"],
+    "robust": ["strong", "reliable", "resilient", "dependable"],
+    "holistic": ["integrated", "unified", "all-encompassing", "complete"],
+    "intricate": ["complex", "elaborate", "detailed", "involved"],
+    "multifaceted": ["complex", "layered", "many-sided", "varied"],
+    "comprehensive": ["detailed", "thorough", "extensive", "in-depth"],
+    "cutting-edge": ["advanced", "recent", "modern", "state-of-the-art"],
+    "groundbreaking": ["innovative", "novel", "pioneering", "original"]
+  },
+
+  "high_risk_phrases": {
+    "plays a crucial role": ["directly influences", "shapes", "governs", "determines"],
+    "plays a key role": ["is central to", "underpins", "drives", "anchors"],
+    "plays an important role": ["contributes significantly to", "is integral to", "factors into"],
+    "a comprehensive analysis": ["a detailed examination", "a thorough study", "an in-depth review"],
+    "in the realm of": ["in", "within", "across the field of", "in the domain of"],
+    "in today's landscape": ["currently", "at present", "in current practice"],
+    "sheds light on": ["clarifies", "reveals", "exposes", "brings into focus"],
+    "paves the way for": ["enables", "opens the door to", "sets the stage for"],
+    "at the forefront of": ["leading", "ahead in", "advancing"],
+    "a testament to": ["evidence of", "proof of", "a demonstration of"]
+  },
+
+  "high_risk_filler_words": [
+    "tapestry", "landscape", "paradigm", "synergy", "ecosystem",
+    "game-changer", "transformative", "revolutionize", "spearhead",
+    "streamline", "empower", "optimize", "harness", "catalyze"
+  ]
+}

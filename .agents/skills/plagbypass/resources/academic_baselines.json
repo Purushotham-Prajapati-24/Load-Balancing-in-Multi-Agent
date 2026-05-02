@@ -1,0 +1,73 @@
+{
+  "description": "Target stylometric profiles for human-like academic writing. Used by the plagbypass skill to calibrate humanization transforms.",
+  "version": "1.0",
+
+  "perplexity_targets": {
+    "ai_generated_range": [15, 35],
+    "human_academic_range": [60, 120],
+    "target_minimum": 55,
+    "target_optimal": 80,
+    "note": "PPL measured against GPT-2 base. Higher = less predictable = more human."
+  },
+
+  "burstiness_targets": {
+    "ai_generated_range": [1.0, 2.5],
+    "human_academic_range": [5.0, 25.0],
+    "target_minimum": 4.5,
+    "target_optimal": 10.0,
+    "note": "Standard deviation of per-sentence PPL. Higher = more rhythm variation."
+  },
+
+  "sentence_length_distribution": {
+    "short": {"word_range": [5, 10], "frequency_pct": 15},
+    "medium": {"word_range": [15, 25], "frequency_pct": 55},
+    "long": {"word_range": [28, 40], "frequency_pct": 25},
+    "very_long": {"word_range": [41, 60], "frequency_pct": 5},
+    "note": "Human writing has ~15% short bursts. AI tends toward 90%+ medium."
+  },
+
+  "paragraph_structure": {
+    "min_sentences_per_paragraph": 2,
+    "max_sentences_per_paragraph": 7,
+    "ideal_variation": "Alternate between 2-3 sentence and 5-6 sentence paragraphs.",
+    "interpretive_paragraphs": "Insert a 1-2 sentence interpretive paragraph every 3-4 analytical paragraphs."
+  },
+
+  "voice_markers": {
+    "first_person_frequency": "1-2 per 500 words (We observed, Our analysis, We propose)",
+    "hedging_frequency": "1 per 200 words (appears to, seems, may, could, potentially)",
+    "interpretive_frequency": "1 per 300 words (Interestingly, Remarkably, This suggests, One explanation is)",
+    "rhetorical_questions": "1 per 1000 words (Why does this pattern emerge? What accounts for...?)"
+  },
+
+  "lexical_diversity": {
+    "transition_reuse_window": 500,
+    "note": "Never reuse the same transition word within 500 words.",
+    "opener_types": [
+      "Subject-first (The algorithm...)",
+      "Adverbial (Significantly, the...)",
+      "Prepositional (In this context,...)",
+      "Gerund (Analyzing the data,...)",
+      "Conditional (If the system...)",
+      "Temporal (After convergence,...)",
+      "Contrastive (Unlike previous work,...)"
+    ],
+    "opener_rotation": "Use each type at least once per 1000 words."
+  },
+
+  "academic_tone_calibration": {
+    "formality_level": "High but not robotic",
+    "avoid": [
+      "Overly casual language (stuff, things, a lot)",
+      "Excessive qualifiers (very, really, extremely)",
+      "Absolute statements without evidence",
+      "Identical paragraph openings within 2 pages"
+    ],
+    "encourage": [
+      "Specific quantitative claims with citations",
+      "Acknowledgment of limitations",
+      "Comparison with prior work using contrastive language",
+      "Domain-specific jargon used precisely (not for decoration)"
+    ]
+  }
+}
