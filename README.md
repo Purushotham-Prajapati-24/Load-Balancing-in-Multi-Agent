@@ -1,93 +1,105 @@
 # Dynamic Load Balancing in Multi-Agent Task Orchestration
-### ── Hybrid Adaptive Scheduler (HAS) for Heterogeneous MAS
+### ── Hybrid Adaptive Scheduler (HAS) for Heterogeneous Environments
 
-![Architecture Banner](assets/architecture.png)
+![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue.svg)
+![IEEE 2025](https://img.shields.io/badge/Research-IEEE%202025-orange.svg)
+![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 
-> **Research Highlights**: A novel hybrid algorithm that bridges the gap between offline planning and online execution. Achieves within **3% of optimal makespan** with negligible latency overhead.
-
----
-
-## ⚡ Overview
-
-Efficient task scheduling in **Multi-Agent Systems (MAS)** is a fundamental challenge in distributed computing. While offline algorithms (like LPT) offer tight mathematical bounds, they fail in dynamic environments. Online heuristics (like Greedy ECT) offer responsiveness but lack global optimization.
-
-**HAS (Hybrid Adaptive Scheduler)** introduces a tunable parameter $\alpha$ to bridge this divide:
-- **Phase 1 (Batching)**: Buffers $\alpha \cdot N$ tasks for LPT sorting.
-- **Phase 2 (Streaming)**: Handles remaining $(1-\alpha) \cdot N$ tasks via real-time assignment.
+> **Hybrid Adaptive Scheduler (HAS)** bridges the gap between offline planning and online execution. By buffering a tunable fraction $\alpha$ of incoming tasks, HAS achieves near-optimal makespan while maintaining real-time responsiveness.
 
 ---
 
-## 🚀 Key Features
+## 📐 Architecture Overview
 
-- 🏗️ **Architectural Flexibility**: Adjust $\alpha \in [0,1]$ to tune your specific Latency vs. Throughput trade-off.
-- ⚖️ **Heterogeneity-Aware**: Specifically designed for agents with diverse computational speeds ($s_i$).
-- 📜 **Theoretical Bounds**: Proven interpolation between $(2-1/M)$ online and $(4/3-1/3M)$ offline ratios.
-- 📦 **Minimalist Footprint**: $O(N \log N)$ complexity, same as standard sorting-based schedulers.
+HAS utilizes a **2-Phase Hybrid Architecture** designed for high-throughput load balancing in heterogeneous multi-agent systems.
 
----
+```mermaid
+graph TD
+    TS[<b>Task Stream</b><br/>N Tasks Arriving] --> Split{<b>Hybrid Logic</b><br/>α Parameter}
+    
+    subgraph "Phase 1: Planning"
+    Split -->|First α·N Tasks| P1[<b>Batch Phase</b><br/>Buffer & LPT Sort]
+    end
+    
+    subgraph "Phase 2: Execution"
+    Split -->|Remaining Tasks| P2[<b>Online Phase</b><br/>ECT Rule]
+    end
+    
+    P1 -->|Static Optimization| Scheduler[<b>Scheduler Agent</b>]
+    P2 -->|Dynamic Assignment| Scheduler
+    
+    Scheduler --> Agents{<b>Heterogeneous Agent Pool</b>}
+    
+    Agents --> A1[Agent 1: Speed s₁]
+    Agents --> A2[Agent 2: Speed s₂]
+    Agents --> AM[Agent M: Speed s_M]
 
-## 🛠️ The HAS Pipeline
-
-The algorithm operates in two synchronized phases to maximize agent utilization while minimizing waiting time.
-
-| Phase | Strategy | Benefit |
-|:---:|:---:|:---|
-| **1. Batch** | **LPT (Longest Processing Time)** | Minimizes load variance by scheduling "heavy" tasks first. |
-| **2. Online** | **ECT (Earliest Completion Time)** | Maintains real-time responsiveness for incoming streaming tasks. |
-
----
-
-## 📊 Performance Analysis
-
-Our experiments span Identical ($P$), Uniform ($Q$), and Unrelated ($R$) machine models with 200+ task sets.
-
-### Competitive Ratio vs. $\alpha$
-![Results Chart](assets/results.png)
-
-*As shown above, increasing $\alpha$ to just **0.3** captures ~90% of the offline optimization benefit, demonstrating that full task knowledge is rarely necessary for high-quality scheduling.*
-
-### Benchmarking Summary
-
-| Algorithm | Identical ($P$) | Uniform ($Q$) | Bimodal ($Q_{mix}$) |
-|:---|:---:|:---:|:---:|
-| Random | 1.337 | 3.551 | 4.128 |
-| Round Robin | 1.165 | 3.550 | 3.741 |
-| Online Greedy | 1.032 | 1.027 | 1.025 |
-| **HAS ($\alpha=0.3$)** | **1.032** | **1.026** | **1.024** |
-| Offline LPT | 1.001 | 1.001 | 1.001 |
-
----
-
-## 💻 Quick Start
-
-### Installation
-```bash
-git clone https://github.com/Purushotham-Prajapati-24/Load-Balancing-in-Multi-Agent.git
-cd Load-Balancing-in-Multi-Agent/research
-pip install numpy matplotlib
+    %% Styling
+    style TS fill:#1e1e1e,stroke:#6a1b9a,stroke-width:2px,color:#fff
+    style Split fill:#1e1e1e,stroke:#00acc1,stroke-width:2px,color:#fff
+    style P1 fill:#2c2c2c,stroke:#ff9800,stroke-width:1px,color:#fff
+    style P2 fill:#2c2c2c,stroke:#4caf50,stroke-width:1px,color:#fff
+    style Scheduler fill:#1e1e1e,stroke:#00acc1,stroke-width:2px,color:#fff
+    style Agents fill:#1e1e1e,stroke:#6a1b9a,stroke-width:2px,color:#fff
 ```
 
-### Run Simulations
-```bash
-python main.py
-```
-*This runner generates all 5 publication-quality figures used in the research paper.*
+---
+
+## 🚀 Key Advantages
+
+- 💠 **Tunable Responsiveness**: Adjust $\alpha \in [0,1]$ to balance initial latency vs. final scheduling quality.
+- ⚡ **Near-Optimal Performance**: Empirically remains within **3% of offline optimal** for $\alpha \geq 0.3$.
+- 🧠 **Heterogeneity-Aware**: ECT (Earliest Completion Time) logic handles diverse computational capacities ($s_i$) natively.
+- 📉 **Provable Bounds**: Guaranteed interpolation between the $(2-1/M)$ online and $(4/3-1/3M)$ offline competitive ratios.
 
 ---
 
-## 📑 Theoretical Foundation
+## 📊 Empirical Results
 
-The makespan $C_{\max}$ of HAS is bounded by the following relationship:
+Our research validates HAS across multiple machine models ($P$, $Q$, and $R$) and workload distributions.
+
+### Alpha Sensitivity Analysis
+![Alpha Sweep](assets/alpha_sweep.png)
+*Figure 1: Performance gains saturate quickly; buffering just 30% of tasks captures 90% of the LPT advantage.*
+
+### Impact of Agent Heterogeneity
+![Heterogeneity Impact](assets/hetero_impact.png)
+*Figure 2: HAS significantly outperforms Random and Round Robin schedulers as agent speed variance increases.*
+
+---
+
+## ⚙️ Core Algorithm
+
+The makespan $C_{\max}$ of HAS is mathematically bounded, providing a safety net for mission-critical deployments:
 
 $$C_{\max}^{HAS} \leq \left(2 - \frac{1}{M}\right) C_{\max}^* - \frac{\alpha}{M} \cdot p_{\max}^{\text{batch}}$$
 
-This theorem guarantees that HAS will always perform at least as well as pure online list scheduling, with a linear improvement factor governed by the batch parameter $\alpha$.
+### Complexity Breakdown
+- **Phase 1**: $O(\alpha N \log \alpha N)$ (Sorting overhead)
+- **Phase 2**: $O(NM)$ (Assignment logic)
+- **Total**: $O(N \log N + NM)$ (Asymptotically equivalent to greedy scheduling)
 
 ---
 
-## 📝 Citation
+## 💻 Installation & Usage
 
-If this research aids your work, please cite it as:
+```bash
+# Clone the repository
+git clone https://github.com/Purushotham-Prajapati-24/Load-Balancing-in-Multi-Agent.git
+
+# Install dependencies
+pip install numpy matplotlib
+
+# Run the research simulation suite
+cd research
+python main.py
+```
+
+---
+
+## 📑 Citation
+
+If you use HAS in your research or production environment, please cite the following paper:
 
 ```bibtex
 @inproceedings{prajapati2025has,
